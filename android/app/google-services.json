@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "791119424451",
+    "project_id": "sevycotroller",
+    "storage_bucket": "sevycotroller.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791119424451:android:9fa222b2ca6724e49aeb76",
+        "android_client_info": {
+          "package_name": "com.sevy.controller"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "791119424451-ke726hfseunejk51sj03be5rsb255vus.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApGk2dJmJFXtW8PizFRRl6O8RWd-4Y-FE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "791119424451-ke726hfseunejk51sj03be5rsb255vus.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
