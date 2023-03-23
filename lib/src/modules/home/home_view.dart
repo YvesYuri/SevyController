@@ -4,6 +4,8 @@ import 'package:controller/src/modules/home/widgets/my_account_widget.dart';
 import 'package:controller/src/modules/settings/settings_view.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
+import '../favorites/favorites_view.dart';
+import '../scenes/scenes_view.dart';
 import 'home_controller.dart';
 import 'package:flutter/material.dart' as material;
 
@@ -128,6 +130,7 @@ class _HomeViewState extends State<HomeView> {
     var homeController = Provider.of<HomeController>(context, listen: false);
     homeController.subscribeBuildings();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      homeController.enableCloudSync();
       await Future.delayed(const Duration(seconds: 1));
       homeController.changeCurrentBuilding(homeController.buildings.first);
     });
@@ -372,17 +375,19 @@ class _HomeViewState extends State<HomeView> {
               PaneItem(
                 icon: const Icon(FluentIcons.favorite_star),
                 title: const Text("Favorites"),
-                body: Container(),
+                body: const FavoritesView(),
               ),
               PaneItem(
                 icon: const Icon(FluentIcons.lightbulb),
                 title: const Text("Devices & Rooms"),
-                body: const DevicesRoomsView(),
+                body: DevicesRoomsView(
+                  building: homeController.currentBuilding,
+                ),
               ),
               PaneItem(
                 icon: const Icon(FluentIcons.play),
-                title: const Text("Scenarios"),
-                body: Container(),
+                title: const Text("Scenes"),
+                body: const ScenesView(),
               ),
             ],
             footerItems: [

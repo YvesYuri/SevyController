@@ -20,15 +20,15 @@ class CloudDatabaseService {
   Stream get users => firestoreInstance.collection('user').stream;
   
   Future<void> createUser(UserModel user) async {
-    await firestoreInstance.collection('user').document(user.uid!).set(user.toJson());
+    await firestoreInstance.collection('user').document(user.id!).set(user.toJson());
   }
 
   Future<void> updateUser(UserModel user) async {
-    await firestoreInstance.collection('user').document(user.uid!).update(user.toJson());
+    await firestoreInstance.collection('user').document(user.id!).update(user.toJson());
   }
 
   Future<void> deleteUser(UserModel user) async {
-    await firestoreInstance.collection('user').document(user.uid!).delete();
+    await firestoreInstance.collection('user').document(user.id!).delete();
   }
 
   //Building
@@ -36,17 +36,17 @@ class CloudDatabaseService {
 
   Future<String> createBuilding(BuildingModel building) async {
     var newId = Uuid().v4();
-    building.uid = newId;
-    await firestoreInstance.collection('building').document(building.uid!).set(building.toJson());
+    building.id = newId;
+    await firestoreInstance.collection('building').document(building.id!).set(building.toJson());
     return newId;
   }
 
   Future<void> updateBuilding(BuildingModel building) async {
-    await firestoreInstance.collection('building').document(building.uid!).update(building.toJson());
+    await firestoreInstance.collection('building').document(building.id!).update(building.toJson());
   }
 
   Future<void> deleteBuilding(BuildingModel building) async {
-    await firestoreInstance.collection('building').document(building.uid!).delete();
+    await firestoreInstance.collection('building').document(building.id!).delete();
   }
 
   //Room
@@ -54,16 +54,16 @@ class CloudDatabaseService {
 
   Future<void> createRoom(RoomModel room) async {
     var newId = Uuid().v4();
-    room.uid = newId;
-    await firestoreInstance.collection('room').document(room.uid!).set(room.toJson());
+    room.id = newId;
+    await firestoreInstance.collection('room').document(room.id!).set(room.toJson());
   }
 
   Future<void> updateRoom(RoomModel room) async {
-    await firestoreInstance.collection('room').document(room.uid!).update(room.toJson());
+    await firestoreInstance.collection('room').document(room.id!).update(room.toJson());
   }
 
   Future<void> deleteRoom(RoomModel room) async {
-    await firestoreInstance.collection('room').document(room.uid!).delete();
+    await firestoreInstance.collection('room').document(room.id!).delete();
   }
 
 }

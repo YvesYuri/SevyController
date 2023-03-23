@@ -1,14 +1,14 @@
 class UserModel {
-  String? uid;
+  String? id;
   String? displayName;
   String? email;
   String? registerDate;
 
-  UserModel({this.uid, this.displayName, this.email, this.registerDate});
+  UserModel({this.id, this.displayName, this.email, this.registerDate});
 
   factory UserModel.fromJson(dynamic json) {
     return UserModel(
-      uid: json['uid'] as String,
+      id: json['uid'] as String,
       displayName: json['display_name'] as String,
       email: json['email'] as String,
       registerDate: json['register_date'] as String,
@@ -17,7 +17,7 @@ class UserModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['uid'] = uid;
+    data['id'] = id;
     data['display_name'] = displayName;
     data['email'] = email;
     data['register_date'] = registerDate;
@@ -26,7 +26,7 @@ class UserModel {
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-      'uid': uid,
+      'id': id,
       'email': email,
       'display_name': displayName,
       'register_date': registerDate,
@@ -35,7 +35,7 @@ class UserModel {
   }
 
   UserModel.fromMap(Map<String, dynamic> map) {
-    uid = map['uid'];
+    id = map['id'];
     email = map['email'];
     displayName = map['display_name'];
     registerDate = map['register_date'];

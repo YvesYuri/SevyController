@@ -30,116 +30,90 @@ class LoginWidget extends StatelessWidget {
         builder: (context, authenticationController, child) {
       return Stack(
         children: [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: authenticationController.newUser
-                ? const CreateAccountWidget()
-                : ContentDialog(
-                    // key: const Key('2'),
-                    title: const Text('Login'),
-                    content: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(height: 10),
-                        TextBox(
-                          controller:
-                              authenticationController.loginEmailController,
-                          keyboardType: TextInputType.emailAddress,
-                          placeholder: 'Email',
-                        ),
-                        const SizedBox(height: 10),
-                        TextBox(
-                          controller:
-                              authenticationController.loginPasswordController,
-                          keyboardType: TextInputType.text,
-                          obscureText:
-                              authenticationController.passwordLoginVisible
-                                  ? false
-                                  : true,
-                          placeholder: 'Password',
-                          suffix: IconButton(
-                            icon: Icon(
-                              authenticationController.passwordLoginVisible
-                                  ? FluentIcons.hide3
-                                  : FluentIcons.view,
-                            ),
-                            onPressed: () {
-                              authenticationController
-                                  .changePasswordLoginVisible();
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'New User? ',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                authenticationController.changeNewUser(true);
-                              },
-                              child: MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: Text(
-                                  'Create account!',
-                                  style: TextStyle(
-                                    color: FluentTheme.of(context).accentColor,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
+          ContentDialog(
+            // key: const Key('2'),
+            title: const Text('Login'),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 10),
+                TextBox(
+                  controller: authenticationController.loginEmailController,
+                  keyboardType: TextInputType.emailAddress,
+                  placeholder: 'Email',
+                ),
+                const SizedBox(height: 10),
+                TextBox(
+                  controller: authenticationController.loginPasswordController,
+                  keyboardType: TextInputType.text,
+                  obscureText: authenticationController.passwordLoginVisible
+                      ? false
+                      : true,
+                  placeholder: 'Password',
+                  suffix: IconButton(
+                    icon: Icon(
+                      authenticationController.passwordLoginVisible
+                          ? FluentIcons.hide3
+                          : FluentIcons.view,
                     ),
-                    actions: [
-                      Button(
-                        child: const Text('Cancel'),
-                        onPressed: () {
-                          // myAccountController!.changeNewUser(false);
-                          Navigator.pop(context);
-                          // Delete file here
-                        },
-                      ),
-                      FilledButton(
-                        child: const Text('Login'),
-                        onPressed: () async {
-                          if (authenticationController.validateLogin()) {
-                            var result =
-                                await authenticationController.signIn();
-                            if (authenticationController.authenticationState ==
-                                AuthenticationState.error) {
-                              showMessage(context, 'Error', result,
-                                  InfoBarSeverity.error);
-                            } else if (authenticationController.authenticationState ==
-                                AuthenticationState.success) {
-                              showMessage(context, 'Success', result,
-                                  InfoBarSeverity.success);
-                            }
-                          } else {
-                            showMessage(
-                                context,
-                                'Error',
-                                'Please provide a valid email address and a password with at least 6 characters to proceed.',
-                                InfoBarSeverity.error);
-                            // }
-                          }
-                        },
-                      ),
-                    ],
+                    onPressed: () {
+                      authenticationController.changePasswordLoginVisible();
+                    },
                   ),
+                ),
+                const SizedBox(height: 10),
+                const MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Text(
+                    'Forgot your password?',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Button(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  // myAccountController!.changeNewUser(false);
+                  Navigator.pop(context);
+                  // Delete file here
+                },
+              ),
+              FilledButton(
+                child: const Text('Login'),
+                onPressed: () async {
+                  if (authenticationController.validateLogin()) {
+                    var result = await authenticationController.signIn();
+                    if (authenticationController.authenticationState ==
+                        AuthenticationState.error) {
+                      showMessage(
+                          context, 'Error', result, InfoBarSeverity.error);
+                    } else if (authenticationController.authenticationState ==
+                        AuthenticationState.success) {
+                      showMessage(
+                          context, 'Success', result, InfoBarSeverity.success);
+                    }
+                  } else {
+                    showMessage(
+                        context,
+                        'Error',
+                        'Please provide a valid email address and a password with at least 6 characters to proceed.',
+                        InfoBarSeverity.error);
+                    // }
+                  }
+                },
+              ),
+            ],
           ),
           Visibility(
-            visible: authenticationController.authenticationState == AuthenticationState.loading,
+            visible: authenticationController.authenticationState ==
+                AuthenticationState.loading,
             child: Container(
               // height: 60,
               // width: 60,

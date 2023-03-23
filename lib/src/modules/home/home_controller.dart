@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:controller/src/data/model/building_model.dart';
 import 'package:controller/src/data/model/user_model.dart';
 import 'package:controller/src/data/services/cloud_database_service.dart';
+import 'package:controller/src/data/services/database_service.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
+import '../../data/model/room_model.dart';
 import '../../data/services/authentication_service.dart';
 
 enum HomeState {
@@ -26,6 +28,8 @@ class HomeController extends ChangeNotifier {
   bool buildingEdition = false;
   BuildingModel? currentBuilding;
   TapDownDetails tapDownDetails = TapDownDetails();
+
+  bool lab = false;
 
   UserModel? get currentUser => AuthenticationService.instance.getCurrentUser();
 
@@ -52,8 +56,8 @@ class HomeController extends ChangeNotifier {
   Future<void> signOut() async {
     homeState = HomeState.loading;
     notifyListeners();
-    await Future.delayed(const Duration(seconds: 1));
-    await AuthenticationService.instance.signOut();
+    await Future.delayed(const Duration(seconds: 2));
+    AuthenticationService.instance.signOut();
     homeState = HomeState.success;
     notifyListeners();
   }
@@ -89,6 +93,62 @@ class HomeController extends ChangeNotifier {
       users = userList;
       notifyListeners();
     });
+  }
+
+  void enableCloudSync() {
+    //building
+    late StreamSubscription cloudSyncBuildingSubscription;
+    cloudSyncBuildingSubscription =
+        CloudDatabaseService.instance.buildings.listen((event) async {
+      List<BuildingModel> cloudBuildings = [];
+      event.forEach((e) async {
+        var building = BuildingModel.fromJson(e);
+        cloudBuildings.add(building);
+      });
+      var currentUser = AuthenticationService.instance.getCurrentUser();
+      var cloudBuildingUser = cloudBuildings
+          .where((element) => element.owner == currentUser.email)
+          .toList();
+      var localBuildings = await DatabaseService.instance.readBuildings();
+      for (var building in cloudBuildingUser) {
+        if (localBuildings.any((element) => element.id == building.id)) {
+          // if (localBuildings
+          //         .firstWhere((element) => element.id == building.id)
+          //         .name !=
+          //     building.name) {
+          //   await DatabaseService.instance.updateBuilding(building);
+          // }
+        } else {
+          print("nao existe");
+          // await DatabaseService.instance.createBuilding(building);
+        }
+      }
+      notifyListeners();
+    });
+    //room
+    // late StreamSubscription cloudSyncRoomSubscription;
+    // cloudSyncRoomSubscription =
+    //     CloudDatabaseService.instance.rooms.listen((event) async {
+    //   List<RoomModel> roomList = [];
+    //   var currentUser = AuthenticationService.instance.getCurrentUser();
+    //   var localRooms = await DatabaseService.instance.readRooms();
+    //   event.forEach((e) async {
+    //     var room = RoomModel.fromJson(e);
+    //     if (room.owner == currentUser.email) {
+    //       if (localRooms.any((element) => element.uid == room.uid)) {
+    //         if (localRooms
+    //                 .firstWhere((element) => element.uid == room.uid)
+    //                 .name !=
+    //             room.name) {
+    //           await DatabaseService.instance.updateRoom(room);
+    //         }
+    //       } else {
+    //         await DatabaseService.instance.createRoom(room);
+    //       }
+    //     }
+    //   });
+    //   notifyListeners();
+    // });
   }
 
   void subscribeBuildings() {

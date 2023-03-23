@@ -84,7 +84,7 @@ class CreateAccountWidget extends StatelessWidget {
               FilledButton(
                 child: const Text('Create'),
                 onPressed: () async {
-                  if (authenticationController.validateCreateAccout()) {
+                  if (authenticationController.validateCreateAccount()) {
                     var result = await authenticationController.signUp();
                     if (authenticationController.authenticationState == AuthenticationState.error) {
                       showMessage(context, 'Error', result, InfoBarSeverity.error);

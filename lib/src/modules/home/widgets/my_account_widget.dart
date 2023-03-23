@@ -23,7 +23,9 @@ class MyAccountWidget extends StatelessWidget {
                         FluentTheme.of(context).brightness == Brightness.dark
                             ? Colors.white
                             : Colors.black,
-                    data: homeController.currentUser!.email!,
+                    data: homeController.currentUser!.email == null
+                        ? ''
+                        : homeController.currentUser!.email!,
                     version: QrVersions.auto,
                     size: 70,
                     gapless: false,
@@ -40,21 +42,21 @@ class MyAccountWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "Name: ${homeController.currentUser!.displayName!}",
+                        "Name: ${homeController.currentUser!.displayName == null ? '' : homeController.currentUser!.displayName!}",
                         style: const TextStyle(
                           fontWeight: FontWeight.normal,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Email: ${homeController.currentUser!.email!}",
+                        "Email: ${homeController.currentUser!.email == null ? '' : homeController.currentUser!.email!}",
                         style: const TextStyle(
                           fontWeight: FontWeight.normal,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Member since: ${homeController.currentUser!.registerDate!}",
+                        "Member since: ${homeController.currentUser!.registerDate == null ? '' : homeController.currentUser!.registerDate!}",
                         style: const TextStyle(
                           fontWeight: FontWeight.normal,
                         ),

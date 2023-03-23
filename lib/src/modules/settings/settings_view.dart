@@ -14,18 +14,8 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(
-      header: const Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 24,
-        ),
-        child: Text(
-          "Settings",
-          style: TextStyle(
-            // color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      header: const PageHeader(
+        title: Text('Settings'),
       ),
       // padding: const EdgeInsets.all(
       //   10,

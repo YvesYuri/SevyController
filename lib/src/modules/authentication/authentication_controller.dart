@@ -7,9 +7,11 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
 import '../../data/model/room_model.dart';
 import '../../data/model/user_model.dart';
 import '../../data/services/authentication_service.dart';
+import '../../data/services/database_service.dart';
 
 enum AuthenticationState {
   initial,
@@ -78,7 +80,7 @@ class AuthenticationController extends ChangeNotifier {
     return loginIsValid;
   }
 
-  bool validateCreateAccout() {
+  bool validateCreateAccount() {
     bool displayNameIsValid =
         createAccountDisplayNameController.text.isNotEmpty &&
             createAccountDisplayNameController.text.length >= 4;
@@ -125,32 +127,41 @@ class AuthenticationController extends ChangeNotifier {
         createAccountEmailController.text,
         createAccountPasswordController.text,
       );
-      CloudDatabaseService.instance.createUser(
-        UserModel(
-          uid: result.uid,
+      late StreamSubscription subscription;
+      subscription = authStateChanges.listen((UserModel? user) async {
+        var newUser = UserModel(
+          id: result.uid,
           email: result.email!,
           displayName: createAccountDisplayNameController.text,
           registerDate:
               DateFormat('dd/MM/yyyy').format(result.metadata.creationTime!),
-        ),
-      );
-      var buildingUid = await CloudDatabaseService.instance.createBuilding(
-        BuildingModel(
+        );
+        await CloudDatabaseService.instance.createUser(newUser);
+        // await DatabaseService.instance.createUser(newUser);
+        var newBuilding = BuildingModel(
           name: 'Home',
           cover: '',
           owner: result.email!,
-        ),
-      );
-      CloudDatabaseService.instance.createRoom(RoomModel(
-        name: 'Living Room',
-        owner: result.email!,
-        buildingUid: buildingUid
-      ));
-      CloudDatabaseService.instance.createRoom(RoomModel(
-        name: 'Bedroom',
-        owner: result.email!,
-        buildingUid: buildingUid
-      ));
+        );
+        var buildingUid =
+            await CloudDatabaseService.instance.createBuilding(newBuilding);
+        // await DatabaseService.instance.createBuilding(newBuilding);
+        var newRoom1 = RoomModel(
+          name: 'Living Room',
+          owner: result.email!,
+          buildingUid: buildingUid,
+        );
+        var newRoom2 = RoomModel(
+          name: 'Bedroom',
+          owner: result.email!,
+          buildingUid: buildingUid,
+        );
+        await CloudDatabaseService.instance.createRoom(newRoom1);
+        await CloudDatabaseService.instance.createRoom(newRoom2);
+        // await DatabaseService.instance.createRoom(newRoom1);
+        // await DatabaseService.instance.createRoom(newRoom2);
+        subscription.cancel();
+      });
       clearCreateAccountControllers();
       authenticationState = AuthenticationState.success;
       notifyListeners();
