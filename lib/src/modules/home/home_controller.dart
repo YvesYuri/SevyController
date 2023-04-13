@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:controller/src/data/model/building_model.dart';
 import 'package:controller/src/data/model/user_model.dart';
 import 'package:controller/src/data/services/cloud_database_service.dart';
 import 'package:controller/src/data/services/database_service.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../data/model/room_model.dart';
 import '../../data/services/authentication_service.dart';
@@ -20,14 +22,16 @@ class HomeController extends ChangeNotifier {
   var homeState = HomeState.initial;
 
   int currentPage = 0;
-  bool showMenu = true;
+  bool showMenu = false;
   late StreamSubscription usersSubscription;
   List<UserModel> users = [];
   List<BuildingModel> buildings = [];
   TextEditingController buildingName = TextEditingController();
   bool buildingEdition = false;
   BuildingModel? currentBuilding;
-  TapDownDetails tapDownDetails = TapDownDetails();
+  // TapDownDetails tapDownDetails = TapDownDetails();
+  late StreamSubscription internetSubscription;
+  bool hasInternetConnection = false;
 
   bool lab = false;
 
@@ -43,14 +47,28 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeTapDownDetails(TapDownDetails details) {
-    tapDownDetails = details;
+  void openMenu() {
+    showMenu = true;
     notifyListeners();
   }
+
+  // void changeTapDownDetails(TapDownDetails details) {
+  //   tapDownDetails = details;
+  //   notifyListeners();
+  // }
 
   void changeCurrentBuilding(BuildingModel? building) {
     currentBuilding = building;
     notifyListeners();
+  }
+
+  void getConnectivity() {
+    internetSubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) async {
+      hasInternetConnection = await InternetConnectionChecker().hasConnection;
+      notifyListeners();
+    });
   }
 
   Future<void> signOut() async {
@@ -100,6 +118,7 @@ class HomeController extends ChangeNotifier {
     late StreamSubscription cloudSyncBuildingSubscription;
     cloudSyncBuildingSubscription =
         CloudDatabaseService.instance.buildings.listen((event) async {
+      await Future.delayed(const Duration(seconds: 2));
       List<BuildingModel> cloudBuildings = [];
       event.forEach((e) async {
         var building = BuildingModel.fromJson(e);
@@ -112,43 +131,77 @@ class HomeController extends ChangeNotifier {
       var localBuildings = await DatabaseService.instance.readBuildings();
       for (var building in cloudBuildingUser) {
         if (localBuildings.any((element) => element.id == building.id)) {
-          // if (localBuildings
-          //         .firstWhere((element) => element.id == building.id)
-          //         .name !=
-          //     building.name) {
-          //   await DatabaseService.instance.updateBuilding(building);
-          // }
+          if (localBuildings
+                  .firstWhere((element) => element.id == building.id)
+                  .name !=
+              building.name) {
+            try {
+              await DatabaseService.instance.updateBuilding(building);
+            } catch (e) {
+              print(e);
+            }
+          }
         } else {
-          print("nao existe");
-          // await DatabaseService.instance.createBuilding(building);
+          try {
+            await DatabaseService.instance.createBuilding(building);
+          } catch (e) {
+            print(e);
+          }
         }
       }
-      notifyListeners();
+      for (var building in localBuildings) {
+        if (!cloudBuildingUser.any((element) => element.id == building.id)) {
+          try {
+            await DatabaseService.instance.deleteBuilding(building.id!);
+          } catch (e) {
+            print(e);
+          }
+        }
+      }
     });
     //room
-    // late StreamSubscription cloudSyncRoomSubscription;
-    // cloudSyncRoomSubscription =
-    //     CloudDatabaseService.instance.rooms.listen((event) async {
-    //   List<RoomModel> roomList = [];
-    //   var currentUser = AuthenticationService.instance.getCurrentUser();
-    //   var localRooms = await DatabaseService.instance.readRooms();
-    //   event.forEach((e) async {
-    //     var room = RoomModel.fromJson(e);
-    //     if (room.owner == currentUser.email) {
-    //       if (localRooms.any((element) => element.uid == room.uid)) {
-    //         if (localRooms
-    //                 .firstWhere((element) => element.uid == room.uid)
-    //                 .name !=
-    //             room.name) {
-    //           await DatabaseService.instance.updateRoom(room);
-    //         }
-    //       } else {
-    //         await DatabaseService.instance.createRoom(room);
-    //       }
-    //     }
-    //   });
-    //   notifyListeners();
-    // });
+    late StreamSubscription cloudSyncRoomSubscription;
+    cloudSyncRoomSubscription =
+        CloudDatabaseService.instance.rooms.listen((event) async {
+      await Future.delayed(const Duration(seconds: 2));
+      List<RoomModel> cloudRooms = [];
+      event.forEach((e) async {
+        var room = RoomModel.fromJson(e);
+        cloudRooms.add(room);
+      });
+      var currentUser = AuthenticationService.instance.getCurrentUser();
+      var cloudRoomUser = cloudRooms
+          .where((element) => element.owner == currentUser.email)
+          .toList();
+      var localRooms = await DatabaseService.instance.readRooms();
+      for (var room in cloudRoomUser) {
+        if (localRooms.any((element) => element.id == room.id)) {
+          if (localRooms.firstWhere((element) => element.id == room.id).name !=
+              room.name) {
+            try {
+              await DatabaseService.instance.updateRoom(room);
+            } catch (e) {
+              print(e);
+            }
+          }
+        } else {
+          try {
+            await DatabaseService.instance.createRoom(room);
+          } catch (e) {
+            print(e);
+          }
+        }
+      }
+      for (var room in localRooms) {
+        if (!cloudRoomUser.any((element) => element.id == room.id)) {
+          try {
+            await DatabaseService.instance.deleteRoom(room.id!);
+          } catch (e) {
+            print(e);
+          }
+        }
+      }
+    });
   }
 
   void subscribeBuildings() {

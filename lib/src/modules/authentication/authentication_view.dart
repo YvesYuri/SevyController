@@ -4,6 +4,7 @@ import 'package:controller/src/modules/authentication/authentication_controller.
 import 'package:controller/src/modules/authentication/widgets/create_account_widget.dart';
 import 'package:controller/src/modules/authentication/widgets/login_widget.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
 
@@ -105,15 +106,13 @@ class _AuthenticationViewState extends State<AuthenticationView> {
               title: Row(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Image.asset(
-                      filterQuality: FilterQuality.high,
-                      isAntiAlias: true,
-                      height: 35,
-                      width: 35,
-                      ImagesUtil.logo,
-                    ),
-                  ),
+                      padding: const EdgeInsets.only(top: 4),
+                      child: SvgPicture.asset(
+                        ImagesUtil.logo,
+                        height: 35,
+                        width: 35,
+                        
+                      )),
                   const SizedBox(width: 5),
                   const Text('Sevy Controller'),
                 ],

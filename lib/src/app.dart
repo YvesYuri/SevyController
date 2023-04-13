@@ -4,8 +4,10 @@ import 'package:controller/src/data/services/authentication_service.dart';
 import 'package:controller/src/data/services/cloud_database_service.dart';
 import 'package:controller/src/modules/authentication/authentication_view.dart';
 import 'package:controller/src/modules/devices_rooms/devices_rooms_controller.dart';
+import 'package:controller/src/modules/favorites/favorites_controller.dart';
 import 'package:controller/src/modules/home/home_controller.dart';
 import 'package:controller/src/modules/home/home_view.dart';
+import 'package:controller/src/modules/scenes/scenes_controller.dart';
 import 'package:controller/src/modules/settings/settings_controller.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +53,8 @@ class _SevyControllerState extends State<SevyController> {
         ),
         ChangeNotifierProvider(create: (_) => SettingsController()),
         ChangeNotifierProvider(create: (_) => DevicesRoomsController()),
+        ChangeNotifierProvider(create: (_) => FavoritesController()),
+        ChangeNotifierProvider(create: (_) => ScenesController()),
       ],
       child: Consumer<SettingsController>(
           builder: (context, settingsController, child) {

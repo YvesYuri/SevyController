@@ -3,6 +3,7 @@
         "firestore",
         "Firestore",
         "gapless",
-        "Reorderable"
+        "Reorderable",
+        "wifi"
     ]
 }

@@ -130,6 +130,7 @@ class _HomeViewState extends State<HomeView> {
     var homeController = Provider.of<HomeController>(context, listen: false);
     homeController.subscribeBuildings();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      homeController.getConnectivity();
       homeController.enableCloudSync();
       await Future.delayed(const Duration(seconds: 1));
       homeController.changeCurrentBuilding(homeController.buildings.first);
@@ -226,6 +227,7 @@ class _HomeViewState extends State<HomeView> {
                             ),
                           ),
                           material.PopupMenuItem(
+                            enabled: false,
                             height: 30,
                             value: 1,
                             child: Row(
@@ -279,41 +281,45 @@ class _HomeViewState extends State<HomeView> {
                             ),
                           ),
                           material.PopupMenuItem(
+                            enabled: homeController.hasInternetConnection,
                             height: 30,
                             value: 1,
                             child: Row(
-                              children: [
-                                const Icon(
+                              children: const [
+                                Icon(
                                   FluentIcons.edit,
                                   size: 13,
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   "Edit",
-                                  style:
-                                      FluentTheme.of(context).typography.body,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                           material.PopupMenuItem(
+                            enabled: homeController.hasInternetConnection,
                             height: 30,
                             value: 2,
                             child: Row(
-                              children: [
-                                const Icon(
+                              children: const [
+                                Icon(
                                   FluentIcons.delete,
                                   size: 13,
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   "Delete",
-                                  style:
-                                      FluentTheme.of(context).typography.body,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ],
                             ),
@@ -335,21 +341,23 @@ class _HomeViewState extends State<HomeView> {
                           ),
                           const material.PopupMenuDivider(),
                           material.PopupMenuItem(
+                            enabled: homeController.hasInternetConnection,
                             height: 30,
                             value: 3,
                             child: Row(
-                              children: [
-                                const Icon(
+                              children: const [
+                                Icon(
                                   FluentIcons.add,
                                   size: 13,
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   "Add building",
-                                  style:
-                                      FluentTheme.of(context).typography.body,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ],
                             ),
@@ -370,7 +378,9 @@ class _HomeViewState extends State<HomeView> {
                     },
                   ),
                 ),
-                onTap: () {},
+                onTap: () {
+                  homeController.openMenu();
+                },
               ),
               PaneItem(
                 icon: const Icon(FluentIcons.favorite_star),
